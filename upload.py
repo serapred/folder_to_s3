@@ -1,7 +1,8 @@
-# folder too s3
-# Can be used for recursive file upload to S3.
-# If bucket is not in S3, it will be created.
-# It will create mirrorred file structure in S3.
+# folder to s3
+# Multi-tear function for recursive upload of hierarchical structures
+# a process pool handles parallelism while the transfert module use
+# threading to leverage concurrency in case of large files
+
 
 import boto3
 import botocore
@@ -31,11 +32,19 @@ def __bucket_exists(bucket):
         return True
 
 
+# deelete a folder inside of a bucket
+
 def delete_folder(bucket, folder, region):
 
     client = boto3.client('s3', region_name=region)
+
+    # paginator allows to overcome the 1000 object per
+    # request limit of delete_object()
     paginator = client.get_paginator('list_objects_v2')
     pages = paginator.paginate(Bucket=bucket, Prefix=folder)
+
+    # to limit the number of requests, the objects are deleted
+    # in batches of 1000
 
     to_delete = dict(Objects=[])
     for item in pages.search('Contents'):
