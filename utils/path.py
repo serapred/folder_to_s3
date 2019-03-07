@@ -32,11 +32,14 @@ def progress(filename):
 # hierarchical paths generator
 
 
-def dir_tree(folder_name):
+def dir_tree(folder_name, reverse=False):
 
-    for root, dirs, files in os.walk(folder_name, topdown=False):
+    for root, dirs, files in os.walk(folder_name, topdown=True):
+        if reverse:
+            # inverse lexicographic order
+            files.reverse()
         for name in files:
-            if name is not None:
+            if name is not None and not name.endswith('.DS_Store'):
                 yield os.path.join(root, name)
 
 
