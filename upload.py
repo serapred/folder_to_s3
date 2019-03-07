@@ -115,9 +115,7 @@ def folder_to_s3(src, dst, region, max_parallelism=1, force_copy=False, **kwargs
     # start uploading
     with ProcessPoolExecutor(max_workers=max_parallelism) as executor:
         try:
-            # inverse lexicographic order by default
-            # change to false to obtain standard top-down order
-            for file in utils.path.dir_tree(src, reverse=True):
+            for file in utils.path.dir_tree(src):
                 # removes the root so that it can be
                 # later added to the input string
                 suffix = file.replace(src, '')
